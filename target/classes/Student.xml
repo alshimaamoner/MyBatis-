@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="main.mybatis.Student">
+    <insert id = "insert" parameterType = "Student">
+    INSERT INTO STUDENT (NAME, BRANCH, PERCENTAGE, PHONE, EMAIL ) VALUES (#{name},
+    #{branch}, #{percentage}, #{phone}, #{email});
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    <update id = "update" parameterType = "Student">
+        UPDATE STUDENT SET EMAIL = #{email}, NAME = #{name}, BRANCH = #{branch}, PERCENTAGE = #{percentage}, PHONE = #{phone} WHERE ID = #{id};
+    </update>
+    <delete id = "deleteById" parameterType = "int">
+        DELETE from STUDENT WHERE ID = #{id};
+    </delete>
+    <select id = "getAllStudent" resultType="Student" >
+        SELECT * FROM STUDENT;
+    </select>
+   <!-- <resultMap id = "result" type = "Student">
+        <result property = "id" column = "ID"/>
+    </resultMap> !-->
+    <resultMap id = "result" type = "Student">
+        <result property = "id" column = "ID"/>
+        <result property = "name" column = "NAME"/>
+        <result property = "branch" column = "BRANCH"/>
+        <result property = "percentage" column = "PERCENTAGE"/>
+        <result property = "phone" column = "PHONE"/>
+        <result property = "email" column = "EMAIL"/>
+    </resultMap>
+
+    <!--Call Procedure!-->
+    <select id = "callById" resultMap = "result" parameterType = "Student" statementType = "CALLABLE">
+        {call details.read_recordById(#{id, jdbcType = INTEGER, mode = IN})}
+    </select>
+
+    <select id = "getById" parameterType = "int" resultMap = "result">
+        SELECT * FROM STUDENT WHERE ID = #{id};
+    </select>
+
+
+
+    <select id = "getRecByName" parameterType = "Student" resultType = "Student">
+
+        SELECT * FROM STUDENT
+        <if test = "name != null">
+            WHERE name LIKE #{name}
+        </if>
+    </select>
+    <select id = "getRecByName_Id" parameterType = "Student" resultType = "Student">
+
+        SELECT * FROM STUDENT
+        <if test = "name != null">
+            WHERE name LIKE #{name}
+        </if>
+
+        <if test = "id != null">
+            AND id LIKE #{id}
+        </if>
+    </select>
+</mapper>
